@@ -1,0 +1,50 @@
+<dependencies>
+    <!-- Retries con Spring Retry -->
+    <dependency>
+        <groupId>org.springframework.retry</groupId>
+        <artifactId>spring-retry</artifactId>
+    </dependency>
+
+    <!-- AOP requerido por Spring Retry -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+
+    <!-- AMQP / Rabbit -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+
+    <!-- Web para el OrderProducer -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- Actuator (opcional) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- Tests -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.amqp</groupId>
+        <artifactId>spring-rabbit-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>

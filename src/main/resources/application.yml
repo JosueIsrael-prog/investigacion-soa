@@ -1,0 +1,15 @@
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: josue
+    password: 20032016
+app:
+  exchange: orders.exchange
+  rk:
+    orderCreated: order.created
+    emailSend: email.send
+  queues:
+    orders: orders.queue
+    email: email.queue
+    dlq: orders.dlq

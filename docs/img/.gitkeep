@@ -1,0 +1,115 @@
+#  Bikestore Async — Proyecto Final
+
+**Universidad de las Américas (UDLA)**
+**Materia:** Arquitectura de Software
+**Estudiante:** Josué Israel Cevallos Barbero
+**Profesor:** Antonio Alejandro Cañaveral
+**Fecha:** 5 de noviembre de 2025
+
+---
+
+
+#  Bikestore Async (Spring Boot + RabbitMQ)
+
+Sistema asíncrono de pedidos y pagos con Spring Boot y RabbitMQ, utilizando colas, exchange tipo *topic*, DLQ y reintentos.
+
+![Estructura del proyecto](docs/img/docsimgo1arbolproyecto.png)
+
+---
+
+## ️ Tecnologías usadas
+
+- **Java 17** — Lenguaje principal.
+- **Spring Boot 3.5.7** — Framework backend.
+- **Spring AMQP** — Comunicación con RabbitMQ.
+- **RabbitMQ 3.13.x** — Broker de mensajería.
+- **Maven** — Gestión de dependencias.
+- **IntelliJ IDEA** — Entorno de desarrollo.
+
+---
+
+##  Arquitectura general
+
+La aplicación sigue un modelo **productor–consumidor**:
+
+1. **OrderProducer** → envía mensajes al **Exchange** principal.
+2. **RabbitMQ** los enruta hacia las **colas** configuradas (`orders.queue`, `email.queue`, etc.).
+3. **OrderConsumer** y **EmailConsumer** reciben los mensajes.
+4. Si ocurre un error (mensaje “fail” o “dlq”), se redirige a la **cola DLQ** (`orders.dlq`).
+
+---
+
+![Configuracion de RabbitMQ](docs/img/02rabbitconfig.png)
+
+---
+
+##  Configuración de RabbitMQ y variables de la app
+
+El archivo `application.yml` define la conexión con RabbitMQ y los nombres de los exchanges, colas y routing keys usados en el proyecto.
+
+- `spring.rabbitmq`: define el host, puerto y credenciales para conectarse al broker.
+- `app.exchange`: nombre del exchange principal (`orders.exchange`).
+- `app.queues`: define las colas (`orders.queue`, `email.queue`, `orders.dlq`).
+- `app.rk`: routing keys usadas para enrutar mensajes (`order.created`, `email.send`, etc).
+
+ **Captura:**
+![Configuración del application.yml](docsimg03applicationyml.png)
+
+---
+
+## Productor (OrderProducer)
+
+El **OrderProducer** expone un endpoint REST que permite enviar mensajes a RabbitMQ usando el método `convertAndSend()` del `RabbitTemplate`.
+
+- Endpoint: **`GET /api/orders/send?msg=hola`**
+- Envía el mensaje al *exchange* principal (`orders.exchange`)
+- Usa las *routing keys* configuradas en `application.yml`
+- Los mensajes se enrutan a las colas correspondientes según el tipo.
+
+ **Captura:**
+![OrderProducer](docsimg04orderproducer.png)
+
+---
+
+##  Consumidores (OrderConsumer y EmailConsumer)
+
+Los **consumidores** reciben los mensajes que se envían a las colas configuradas.
+Cada uno está asociado a una cola distinta mediante la anotación `@RabbitListener`.
+
+- **OrderConsumer:** procesa mensajes de la cola `orders.queue`.
+  Si el mensaje contiene “fail” o “dlq”, se **rechaza** y se redirige automáticamente a la **DLQ (`orders.dlq`)**.
+- **EmailConsumer:** procesa mensajes de la cola `email.queue`.
+  Solo imprime el mensaje recibido en la consola.
+
+ **Capturas:**
+
+![OrderConsumer](docsimg05orderconsumer.png)
+![EmailConsumer](docsimg06emailconsumer.png)
+
+---
+
+##  Resultados en RabbitMQ
+
+Una vez iniciada la aplicación y enviados los mensajes desde el endpoint:
+
+- Los mensajes válidos (`hola`, `ok`, etc.) llegan a la cola **`orders.queue`**.
+- Los mensajes con error (`fail`, `dlq`, etc.) son redirigidos automáticamente a la cola **DLQ (`orders.dlq`)**.
+
+ **Capturas:**
+
+![Cola orders.queue](docsimg07ordersqueue.png)
+![Cola orders.dlq](docsimg08ordersdlq.png)
+
+
+---
+
+## 🏁 Conclusión
+
+Este proyecto demuestra el uso de **Spring Boot** y **RabbitMQ** para implementar un sistema de mensajería **asíncrono y tolerante a fallos**.
+Se logró la conexión entre productor y consumidores, el manejo de colas y el envío de mensajes hacia una **DLQ (Dead Letter Queue)** en caso de errores.
+El sistema fue probado correctamente con resultados visibles en el panel de RabbitMQ.
+
+---
+
+>  *Desarrollado por Josué Cevallos — UDLA 2025*
+
