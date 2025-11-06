@@ -17,7 +17,7 @@ Sistema asíncrono de pedidos y pagos con Spring Boot y RabbitMQ, utilizando col
 
 ---
 
-## ️ Tecnologías usadas
+## ️ Tecnologías usadas.
 
 - **Java 17** — Lenguaje principal.
 - **Spring Boot 3.5.7** — Framework backend.
